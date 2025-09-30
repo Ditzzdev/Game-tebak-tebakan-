@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Interaktif Komputer</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #7b2ff7, #00c6ff, #ff61d2);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .game-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+      animation: fadeIn 1s ease-in-out;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #7b2ff7, #00c6ff, #ff61d2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientMove 4s infinite linear;
+      background-size: 200% auto;
+    }
+
+    input {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      width: 80%;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    button {
+      background: linear-gradient(90deg, #7b2ff7, #00c6ff, #ff61d2);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: all 0.3s;
+      background-size: 200% auto;
+      animation: gradientMove 3s infinite linear;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .option-btn {
+      display: block;
+      margin: 8px auto;
+      width: 80%;
+    }
+
+    #score {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+
+    .typing {
+      display: inline-block;
+      border-right: 2px solid #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { border-color: transparent; }
+      50% { border-color: #fff; }
+    }
+
+    /* copyright style */
+    .copyright {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #0ff;
+      text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
+      animation: glow 2s ease-in-out infinite alternate;
+      opacity: 0.8;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 5px #0ff, 0 0 10px #0ff; opacity: 0.6; }
+      to { text-shadow: 0 0 15px #0ff, 0 0 30px #0ff; opacity: 1; }
+    }
+
+    /* tombol sound */
+    #soundBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 6px 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    #soundBtn:hover {
+      background: rgba(255,255,255,0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1><span class="logo">💻</span> Game Interaktif Komputer</h1>
+
+    <div id="name-box">
+      <p>Masukkan nama kamu dulu:</p>
+      <input type="text" id="player-name" placeholder="Nama kamu...">
+      <br>
+      <button id="submit-name">Masuk ✅</button>
+    </div>
+
+    <div id="welcome-box" style="display:none;">
+      <p id="welcome-text" class="typing"></p>
+      <br>
+      <button id="start-btn">Mulai 🎮</button>
+    </div>
+
+    <div id="question-box" style="display:none;">
+      <p id="question">Pertanyaan akan muncul di sini...</p>
+      <div id="options"></div>
+    </div>
+
+    <p id="score" style="display:none;">Skor: 0</p>
+
+    <!-- COPYRIGHT -->
+    <footer class="copyright">
+      © 2025 Ditzz Dev
+    </footer>
+
+    <!-- Tombol kontrol sound -->
+    <button id="soundBtn">🔊 ON</button>
+
+    <!-- Backsound -->
+    <audio id="bgMusic" loop>
+      <source src="backsound.mp3" type="audio/mpeg">
+    </audio>
+  </div>
+
+  <script>
+    const questions = [
+      { question: "Komponen yang berfungsi sebagai otak komputer adalah?", options: ["RAM", "CPU", "Harddisk", "Monitor"], answer: "CPU" },
+      { question: "Apa kepanjangan dari RAM?", options: ["Read Access Memory", "Random Access Memory", "Run Active Memory", "Ready All Memory"], answer: "Random Access Memory" },
+      { question: "Sistem operasi berikut yang berbasis open-source adalah?", options: ["Windows", "Linux", "MacOS", "DOS"], answer: "Linux" },
+      { question: "Penyimpanan data permanen ada di?", options: ["Cache", "ROM", "RAM", "CPU"], answer: "ROM" },
+      { question: "Port manakah yang biasanya digunakan untuk menghubungkan mouse dan keyboard modern?", options: ["VGA", "USB", "HDMI", "LAN"], answer: "USB" },
+      { question: "Ekstensi file .exe biasanya digunakan untuk?", options: ["Dokumen", "Gambar", "Program Aplikasi", "Audio"], answer: "Program Aplikasi" },
+      { question: "Komputer pertama kali ditemukan pada tahun?", options: ["1945", "1950", "1937", "1965"], answer: "1937" },
+      { question: "SSD lebih cepat dibanding HDD karena?", options: ["Pakai piringan magnetik", "Tidak ada komponen bergerak", "Lebih berat", "Lebih murah"], answer: "Tidak ada komponen bergerak" },
+      { question: "Perangkat output berikut yang benar adalah?", options: ["Printer", "Mouse", "Keyboard", "Scanner"], answer: "Printer" },
+      { question: "BIOS pada komputer berfungsi untuk?", options: ["Menghubungkan hardware & software", "Menjalankan aplikasi", "Menyimpan file", "Menambah kecepatan internet"], answer: "Menghubungkan hardware & software" }
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    const submitNameBtn = document.getElementById("submit-name");
+    const nameBox = document.getElementById("name-box");
+    const welcomeBox = document.getElementById("welcome-box");
+    const welcomeText = document.getElementById("welcome-text");
+    const startBtn = document.getElementById("start-btn");
+    const questionBox = document.getElementById("question-box");
+    const questionText = document.getElementById("question");
+    const optionsBox = document.getElementById("options");
+    const scoreText = document.getElementById("score");
+
+    const bgMusic = document.getElementById("bgMusic");
+    const soundBtn = document.getElementById("soundBtn");
+    let soundOn = true;
+
+    submitNameBtn.addEventListener("click", () => {
+      const playerName = document.getElementById("player-name").value.trim();
+      if (playerName === "") {
+        alert("Nama tidak boleh kosong!");
+        return;
+      }
+      nameBox.style.display = "none";
+      welcomeBox.style.display = "block";
+      animateTyping(`Selamat bermain, ${playerName} 😊`);
+      bgMusic.play(); // musik mulai pas udah masuk
+    });
+
+    startBtn.addEventListener("click", startGame);
+
+    function startGame() {
+      score = 0;
+      currentIndex = 0;
+      scoreText.textContent = "Skor: 0";
+      welcomeBox.style.display = "none";
+      questionBox.style.display = "block";
+      scoreText.style.display = "block";
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentIndex >= questions.length) {
+        questionText.textContent = `🎉 Game Selesai! Skor akhir kamu: ${score} / ${questions.length}`;
+        optionsBox.innerHTML = "";
+        startBtn.textContent = "Main Lagi 🔄";
+        welcomeBox.style.display = "block";
+        return;
+      }
+
+      let q = questions[currentIndex];
+      questionText.textContent = q.question;
+      optionsBox.innerHTML = "";
+
+      q.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.textContent = opt;
+        btn.classList.add("option-btn");
+        btn.onclick = () => checkAnswer(opt);
+        optionsBox.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      let correct = questions[currentIndex].answer;
+      if (selected === correct) {
+        score++;
+        scoreText.textContent = `Skor: ${score}`;
+      }
+      currentIndex++;
+      showQuestion();
+    }
+
+    function animateTyping(text) {
+      welcomeText.textContent = "";
+      let i = 0;
+      let interval = setInterval(() => {
+        welcomeText.textContent += text.charAt(i);
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, 80);
+    }
+
+    // kontrol sound
+    soundBtn.addEventListener("click", () => {
+      if (soundOn) {
+        bgMusic.pause();
+        soundBtn.textContent = "🔇 OFF";
+      } else {
+        bgMusic.play();
+        soundBtn.textContent = "🔊 ON";
+      }
+      soundOn = !soundOn;
+    });
+  </script>
+</body>
+</html>
